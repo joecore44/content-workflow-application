@@ -439,7 +439,24 @@
     <!-- Page level custom scripts -->
     <script src={% static 'js/demo/chart-area-demo.js' %}></script>
     <script src={% static 'js/demo/chart-pie-demo.js' %}></script>
-
+    <script>
+        const elementsInputs = document.querySelectorAll('input[id^="id_"]');
+        elementsInputs.forEach(element => {
+            element.classList.add("form-control");
+        });
+        const textAreaInputs = document.querySelectorAll('textarea[id^="id_"]');
+        textAreaInputs.forEach(element => {
+            element.classList.add("form-control");
+        });
+        const checkBox = document.querySelectorAll('select[id^="id_"]');
+        checkBox.forEach(element => {
+            element.classList.add("form-control");
+        });
+        const elementsLabels = document.querySelectorAll('label[for^="id_"]');
+        elementsLabels.forEach(element => {
+            element.classList.add("form-label");
+        });
+     </script>
 </body>
 
 </html>

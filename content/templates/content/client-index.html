@@ -119,7 +119,7 @@
                                 <p>{{post.content}}</p>
                                 <ul>
                                     <li>Project Manager: <strong>{{post.author}}</strong></li>
-                                    <li>Posted for Review: <strong>{{post.date_posted}}</strong></li>
+                                    <li>Posted for Review: <strong>{{post.date_posted|date:"F d, Y"}}</strong></li>
                                     <li>Approval Deadline: <strong>{{post.date_approval}}</strong></li>
                                     <li>Status: <strong>{{ post.status}}</strong></li>
                                 </ul>
