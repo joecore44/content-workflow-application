@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Client, Staff, Post
+from .models import ClientProfile, Staff, Post
 
 class ClientRegisterForm(UserCreationForm):
     email = forms.EmailField()
@@ -26,5 +26,5 @@ class ClientUpdateForm(forms.ModelForm):
 
 class ClientUpdateProfileForm(forms.ModelForm):
     class Meta:
-        model = Client
-        fields = ['admin_name', 'admin_email', 'company_name', 'company_logo', 'phone', 'website' ]
+        model = ClientProfile
+        fields = ['admin_first_name', 'admin_last_name', 'admin_email', 'company_name', 'company_logo', 'phone', 'website' ]

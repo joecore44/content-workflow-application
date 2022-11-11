@@ -1,8 +1,51 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 import uuid
 
-class Client(models.Model):
+class User(AbstractUser):
+    class Role(models.TextChoices):
+        CLIENT = "CLIENT", 'Client'
+        STAFF = "STAFF", 'Staff'
+        ADMIN = "ADMIN", 'Admin'
+
+    base_role = Role.ADMIN
+    role = models.CharField(max_length=50, choices=Role.choices, default=base_role)
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.role = self.base_role
+            return super().save(*args, **kwargs)
+
+class ClientManager(BaseUserManager):
+    def get_queryset(self, *args, **kwargs):
+        results = super().get_queryset(*args, **kwargs)
+        return results.filter(role=User.Role.CLIENT)
+
+class ClientManagerIsActive(models.Manager):
+    def get_queryset(self):
+        return super(ClientManagerIsActive, self).get_queryset().filter(is_active=True)
+
+class ClientManagerIsInactive(models.Manager):
+    def get_queryset(self):
+        return super(ClientManagerIsInactive, self).get_queryset().filter(is_active=False)
+
+class Client(User):
+    base_role = User.Role.CLIENT
+    client = ClientManager()
+    active = ClientManagerIsActive()
+    Inactive = ClientManagerIsInactive()
+    class Meta:
+        proxy = True
+        ordering = ('company_name',)
+
+    @classmethod
+    def count_all(cls,):
+        return cls.objects.active.count()
+
+    def __str__(self):
+        return self.company_name
+
+class ClientProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     admin_first_name = models.CharField(max_length=35,
     verbose_name='Contact First Name', default='')
     admin_last_name = models.CharField(max_length=35,
@@ -19,8 +62,20 @@ class Client(models.Model):
     def __str__(self):
         return self.company_name
 
+class StaffManager(BaseUserManager):
+    def get_queryset(self, *args, **kwargs):
+        results = super().get_queryset(*args, **kwargs)
+        return results.filter(role=User.Role.STAFF)
 
-class Staff(models.Model):
+class Staff(User):
+    base_role = User.Role.STAFF
+    class Meta:
+        proxy = True
+    staff = StaffManager()
+
+
+class StaffProfile(models.Model):
+
     DEPARTMENT_CHOICES = (
         ('sales', 'Sales'),
         ('marketing', 'Marketing'),
@@ -56,8 +111,8 @@ class Post(models.Model):
         ('linkedin_post', 'Linkedin Post'),
         ('twitter_post', 'Twitter Post'),
     )
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+   # client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    #staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     content = models.TextField()
     post_type = models.CharField(max_length=20, choices=POST_TYPE_CHOICES, default='facebook_image')
