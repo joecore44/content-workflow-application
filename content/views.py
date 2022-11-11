@@ -1,5 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.views.generic import ListView, DetailView, CreateView
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+from .forms import ClientRegisterForm, StaffRegisterForm, ClientUpdateForm, ClientUpdateProfileForm
 from django.http import HttpResponse
+from .models import Staff, Client, Post
+from django.contrib.auth.decorators import login_required
 
 posts = [
     {
@@ -60,6 +67,95 @@ posts = [
     }
 ]
 
+clients = [
+    {
+        'id': 1,
+        'name': 'Joe Shepard',
+        'company_name': 'Grayling',
+        'email': 'joe@graylingagency.com',
+        'phone': '555-555-5555',
+        'status': 'Active',
+        'number_of_open_posts': '5',
+    },
+    {
+        'id': 2,
+        'name': 'Jordann Shepard',
+        'company_name': 'Core Nutrition',
+        'email': 'jordann@corenutritionpv.com',
+        'phone': '555-555-5555',
+        'status': 'Active',
+        'number_of_open_posts': '10',
+    },
+    {
+        'id': 3,
+        'name': 'Jordann Shepard',
+        'company_name': 'Core Nutrition',
+        'email': 'jordann@corenutritionpv.com',
+        'phone': '555-555-5555',
+        'status': 'Active',
+        'number_of_open_posts': '10',
+    },
+    {
+        'id': 3,
+        'name': 'Jordann Shepard',
+        'company_name': 'Core Nutrition',
+        'email': 'jordann@corenutritionpv.com',
+        'phone': '555-555-5555',
+        'status': 'Active',
+        'number_of_open_posts': '10',
+    }
+    ,
+    {
+        'id': 3,
+        'name': 'Jordann Shepard',
+        'company_name': 'Core Nutrition',
+        'email': 'jordann@corenutritionpv.com',
+        'phone': '555-555-5555',
+        'status': 'Active',
+        'number_of_open_posts': '10',
+    }
+    ,
+    {
+        'id': 3,
+        'name': 'Jordann Shepard',
+        'company_name': 'Core Nutrition',
+        'email': 'jordann@corenutritionpv.com',
+        'phone': '555-555-5555',
+        'status': 'Active',
+        'number_of_open_posts': '10',
+    }
+    ,
+    {
+        'id': 3,
+        'name': 'Jordann Shepard',
+        'company_name': 'Core Nutrition',
+        'email': 'jordann@corenutritionpv.com',
+        'phone': '555-555-5555',
+        'status': 'Active',
+        'number_of_open_posts': '10',
+    }
+    ,
+    {
+        'id': 3,
+        'name': 'Jordann Shepard',
+        'company_name': 'Core Nutrition',
+        'email': 'jordann@corenutritionpv.com',
+        'phone': '555-555-5555',
+        'status': 'Active',
+        'number_of_open_posts': '10',
+    }
+    ,
+    {
+        'id': 3,
+        'name': 'Jordann Shepard',
+        'company_name': 'Core Nutrition',
+        'email': 'jordann@corenutritionpv.com',
+        'phone': '555-555-5555',
+        'status': 'Active',
+        'number_of_open_posts': '10',
+    }
+]
+
 comments = [
     {
         'id': 1,
@@ -81,16 +177,66 @@ comments = [
     }
 ]
 
+@login_required
 def client_home(request):
-    context = {
-        'posts': posts
-    }
-    return render(request, './content/client-index.html', context)
+    if Staff.objects.filter(user=request.user).exists():
+        if request.method == 'POST':
+            form = ClientUpdateProfileForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages = 'Account created for ' + request.POST['company_name']
+                return redirect('dashboard')
+        else:
+            form = ClientUpdateProfileForm()
+            context = {
+                'clients': clients,
+                'form': form
+            }
+            return render(request, './content/staff-index.html', context)
 
+        
+@login_required
 def client_post_detail(request):
     context = {
         'posts': posts,
         'comments': comments
     }
     return render(request, './content/client-post-detail-fb-image.html', context)
+
+@login_required
+def add_client(request):
+    if request.method == 'POST':
+        form = ClientRegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('client-profile', pk=pk)
+    else:
+        form = ClientRegisterForm()
+    return render(request, './content/staff-add-client.html', {'form': form})
+
+
+
+@login_required
+def client_profile(request, pk):
+    user = User.objects.get(id=pk)
+    print(user.username)
+    if request.method == 'POST':
+        cu_form = ClientUpdateForm(request.POST,
+             instance=user)
+        cp_form = ClientUpdateProfileForm(request.POST,
+            instance=user)
+        if cu_form.is_valid() and cp_form.is_valid():
+            cu_form.save()
+            cp_form.save()
+            messages.success(request, f'Client account has been updated!')
+            return redirect('client-profile', pk=pk)
+    else:
+        cu_form = ClientUpdateForm(instance=user)
+        cp_form = ClientUpdateProfileForm(instance=user, initial={'user': user})
+    context = {
+        'cu_form': cu_form,
+        'cp_form': cp_form
+    }
+
+    return render(request, './content/staff-manage-client.html', context)
 

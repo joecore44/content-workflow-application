@@ -1,17 +1,24 @@
 from django.db import models
 from django.contrib.auth.models import User
+import uuid
 
 class Client(models.Model):
-    
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    admin_first_name = models.CharField(max_length=35,
+    verbose_name='Contact First Name', default='')
+    admin_last_name = models.CharField(max_length=35,
+    verbose_name='Contact Last Name', default='')
+    admin_email = models.CharField(max_length=55,
+    verbose_name='Contact Email', default='')
     company_name = models.CharField(max_length=200)
     company_logo = models.ImageField(upload_to='client-media/', blank=True)
     phone = models.CharField(max_length=200)
     website = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, unique=True, default=uuid.uuid1, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.company_name
+
 
 class Staff(models.Model):
     DEPARTMENT_CHOICES = (

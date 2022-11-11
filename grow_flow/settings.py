@@ -116,4 +116,5 @@ CRISPY_TEMPLATE_PATH = 'bootstrap5'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-LOGIN_REDIRECT_URL = 'client-home'
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'dashboard'
