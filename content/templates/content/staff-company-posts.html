@@ -1,14 +1,13 @@
-{% extends 'content/staff-base.html' %}
-{% load crispy_forms_tags %}
+{% extends 'content/client-base.html' %}
 {% block content %}
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Welcome {{ request.user.first_name }}!</h1>
-        <a data-toggle="modal" data-target="#exampleModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                class="fas fa-user fa-sm text-white-50"></i> Add Client</a>
+        <h1 class="h3 mb-0 text-gray-800">{{ company.company_name }} Content</h1>
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
     </div>
 
     <!-- Content Row -->
@@ -21,8 +20,8 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Active Clints</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">8</div>
+                                Earnings (Monthly)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -39,8 +38,8 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Total Pending Posts</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">36</div>
+                                Earnings (Annual)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -96,88 +95,46 @@
                 </div>
             </div>
         </div>
-
-    <div class="container-fluid">
-       <!-- DataTales Example -->
-       <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Clients</h6>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>                  
-                            <th>Company</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Status</th>
-                            <th>Open Tasks</th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr>
-                            <th>Company</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Status</th>
-                            <th>Open Tasks</th>
-                        </tr>
-                    </tfoot>
-                    <tbody>
-                        {% for client in clients %}
-                        
-                        <tr onclick="window.location='company/{{client.slug}}';" class="client-table">
-                            <td><img class="rounded-circle" src="/media/{{ client.company_logo }}"
-                                alt="{{ client.company_name }}" width="30px"> {{ client.company_name }}</td>
-                            <td>{{ client.admin_email }}</td>
-                            <td>{{ client.phone }}</td>
-                            <td>{{ client.status }}</td>
-                            <td>{{ client.number_of_open_posts }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
+        {% for post in posts %}
     
-</div>
-<style>
-    .client-table { 
-        cursor: pointer; 
-    }
-</style>
-<script>
-    function clientOpen() {
-        window.location.href = "{% url 'create-company' %}"
-    </script>
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Add Client</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <form method="POST">
-        <div class="modal-body">
-                {% csrf_token %}
-                <div class="form-group">
-                    {{ form|crispy }}
+        <!-- Content Column -->
+        <div class="col-xl-12 col-lg-12">
+            
+                <!-- Project Card Example -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <a href="#" class="btn btn-warning btn-circle btn-sm">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </a>
+                            {{ post.type }} Post</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-4 mb-4">
+                                <img src="{{ post.image }}" width="350px" />
+                            </div>
+                            <div class="col-lg-8 mb-4">
+                                <h4 class="small font-weight-bold">{{post.title}}</h4>
+                                <p>{{post.content}}</p>
+                                <ul>
+                                    <li>Project Manager: <strong>{{post.author}}</strong></li>
+                                    <li>Posted for Review: <strong>{{post.date_posted|date:"F d, Y"}}</strong></li>
+                                    <li>Approval Deadline: <strong>{{post.date_approval}}</strong></li>
+                                    <li>Status: <strong>{{ post.status}}</strong></li>
+                                </ul>
+                                
+                            </div>
+                        </div>
+                        
+                    </div>
                 </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-        </form>
-        </div>
-      </div>
+  
+    {% endfor %}
+        <!-- End content row-->
     </div>
-  </div>
+    
+</div>
 
 {% endblock content %}

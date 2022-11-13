@@ -13,4 +13,3 @@ def create_staff(sender, instance, created, **kwargs):
     if created and instance.role == 'STAFF':
         StaffProfile.objects.create(user=instance)
     
-        

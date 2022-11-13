@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 from django.views.generic import ListView, DetailView, CreateView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-from .forms import ClientRegisterForm, StaffRegisterForm, ClientUpdateForm, ClientUpdateProfileForm
 from django.http import HttpResponse
-from .models import Staff, Client, Post
+from .models import Staff, Client, Post, CompanyProfile
+from .forms import StaffRegisterForm, CompanyProfileForm
 from django.contrib.auth.decorators import login_required
 
 posts = [
@@ -67,7 +67,7 @@ posts = [
     }
 ]
 
-clients = [
+backup_clients = [
     {
         'id': 1,
         'name': 'Joe Shepard',
@@ -179,20 +179,19 @@ comments = [
 
 @login_required
 def client_home(request):
-    if Staff.objects.filter(user=request.user).exists():
-        if request.method == 'POST':
-            form = ClientUpdateProfileForm(request.POST)
-            if form.is_valid():
-                form.save()
-                messages = 'Account created for ' + request.POST['company_name']
-                return redirect('dashboard')
-        else:
-            form = ClientUpdateProfileForm()
-            context = {
-                'clients': clients,
-                'form': form
-            }
-            return render(request, './content/staff-index.html', context)
+    context = {
+        'posts': posts,
+        'comments': comments,
+    }
+    return render(request, './content/client-index.html', context)
+
+@login_required
+def staff_home(request):
+    clients = CompanyProfile.objects.all()
+    context = {
+        'clients': clients,
+    }
+    return render(request, './content/staff-index.html', context)
 
         
 @login_required
@@ -204,39 +203,38 @@ def client_post_detail(request):
     return render(request, './content/client-post-detail-fb-image.html', context)
 
 @login_required
-def add_client(request):
+def company_create(request):
     if request.method == 'POST':
-        form = ClientRegisterForm(request.POST)
+        form = CompanyProfileForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('client-profile', pk=pk)
+            return redirect('staff-home')
     else:
-        form = ClientRegisterForm()
-    return render(request, './content/staff-add-client.html', {'form': form})
-
-
+        form = CompanyProfileForm()
+    return render(request, './content/staff-company-create.html', {'form': form})
 
 @login_required
-def client_profile(request, pk):
-    user = User.objects.get(id=pk)
-    print(user.username)
+def company_update(request, slug):
+    company = CompanyProfile.objects.get(slug=slug)
+    form = CompanyProfileForm(instance=company)
+
     if request.method == 'POST':
-        cu_form = ClientUpdateForm(request.POST,
-             instance=user)
-        cp_form = ClientUpdateProfileForm(request.POST,
-            instance=user)
-        if cu_form.is_valid() and cp_form.is_valid():
-            cu_form.save()
-            cp_form.save()
-            messages.success(request, f'Client account has been updated!')
-            return redirect('client-profile', pk=pk)
-    else:
-        cu_form = ClientUpdateForm(instance=user)
-        cp_form = ClientUpdateProfileForm(instance=user, initial={'user': user})
+        form = CompanyProfileForm(request.POST, instance=company)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+
     context = {
-        'cu_form': cu_form,
-        'cp_form': cp_form
+        'form': form,
+        'company': company    }
+    return render(request, './content/staff-company-edit.html', context)
+
+@login_required
+def get_company_posts(request, slug):
+    company = CompanyProfile.objects.get(slug=slug)
+    postss = company.post_set.all()
+    context = {
+        'company': company,
+        'posts': posts,
     }
-
-    return render(request, './content/staff-manage-client.html', context)
-
+    return render(request, './content/staff-company-posts.html', context)

@@ -20,36 +20,26 @@ class ClientManager(BaseUserManager):
         results = super().get_queryset(*args, **kwargs)
         return results.filter(role=User.Role.CLIENT)
 
-class ClientManagerIsActive(models.Manager):
-    def get_queryset(self):
-        return super(ClientManagerIsActive, self).get_queryset().filter(is_active=True)
-
-class ClientManagerIsInactive(models.Manager):
-    def get_queryset(self):
-        return super(ClientManagerIsInactive, self).get_queryset().filter(is_active=False)
-
 class Client(User):
     base_role = User.Role.CLIENT
     client = ClientManager()
-    active = ClientManagerIsActive()
-    Inactive = ClientManagerIsInactive()
     class Meta:
         proxy = True
-        ordering = ('company_name',)
 
-    @classmethod
-    def count_all(cls,):
-        return cls.objects.active.count()
-
-    def __str__(self):
-        return self.company_name
 
 class ClientProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    admin_first_name = models.CharField(max_length=35,
-    verbose_name='Contact First Name', default='')
-    admin_last_name = models.CharField(max_length=35,
-    verbose_name='Contact Last Name', default='')
+    user = models.OneToOneField(Client, on_delete=models.CASCADE)
+    company = models.OneToOneField('CompanyProfile', on_delete=models.CASCADE, null=True, blank=True)
+
+class CompanyProfile(models.Model):
+    COMPANY_CHOICES = (
+        ('active', 'Active'),
+        ('urgent', 'Urgent'),
+        ('pending', 'Pending'),
+    )   
+    
+    #user = models.OneToOneField(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=50, choices=COMPANY_CHOICES, default='active')
     admin_email = models.CharField(max_length=55,
     verbose_name='Contact Email', default='')
     company_name = models.CharField(max_length=200)
@@ -72,6 +62,13 @@ class Staff(User):
     class Meta:
         proxy = True
     staff = StaffManager()
+
+    @property
+    def profile(self):
+        return self.staffprofile
+    
+    def __str__(self):
+        return self.user.first_name + ' ' + self.user.last_name
 
 
 class StaffProfile(models.Model):
@@ -111,8 +108,11 @@ class Post(models.Model):
         ('linkedin_post', 'Linkedin Post'),
         ('twitter_post', 'Twitter Post'),
     )
-   # client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    #staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    client = models.ForeignKey(CompanyProfile, 
+    on_delete=models.CASCADE, default='')
+    staff = models.ForeignKey(StaffProfile, 
+    on_delete=models.CASCADE, null=True, 
+    blank=True, default='')
     title = models.CharField(max_length=200)
     content = models.TextField()
     post_type = models.CharField(max_length=20, choices=POST_TYPE_CHOICES, default='facebook_image')
@@ -131,6 +131,7 @@ class Post(models.Model):
     image_9 = models.ImageField(upload_to='post-media/', blank=True)
     image_10 = models.ImageField(upload_to='post-media/', blank=True)
     video_file = models.FileField(upload_to='post-media/', blank=True)
+    #slug = models.SlugField(max_length=200, unique=True, default=uuid.uuid1, null=True)
     
     def __str__(self):
         return self.title
