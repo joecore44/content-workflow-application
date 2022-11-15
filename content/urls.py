@@ -8,4 +8,6 @@ urlpatterns = [
     path('company/new', views.company_create, name='create-company'),
     path('company/<str:slug>', views.company_update, name='update-company'),
     path('company/<str:slug>/posts', views.get_company_posts, name='company-posts'),
+    path('company/<str:slug>/posts/new', views.create_post, name='post-create'),
+    path('company/post/<str:slug>', views.get_company_post_detail, name='post-detail'),
 ]

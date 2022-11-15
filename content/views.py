@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from .models import Staff, Client, Post, CompanyProfile
 from .forms import StaffRegisterForm, CompanyProfileForm
+from .forms import PostCreateForm
 from django.contrib.auth.decorators import login_required
 
 posts = [
@@ -200,7 +201,7 @@ def client_post_detail(request):
         'posts': posts,
         'comments': comments
     }
-    return render(request, './content/client-post-detail-fb-image.html', context)
+    return render(request, './content/staff-post-detail-fb-image.html', context)
 
 @login_required
 def company_create(request):
@@ -217,16 +218,20 @@ def company_create(request):
 def company_update(request, slug):
     company = CompanyProfile.objects.get(slug=slug)
     form = CompanyProfileForm(instance=company)
+    posts = Post.objects.filter(client=company).order_by('-deadline')[:3]
 
     if request.method == 'POST':
-        form = CompanyProfileForm(request.POST, instance=company)
+        form = CompanyProfileForm(request.POST,  request.FILES, instance=company)
+        print(request.POST)
         if form.is_valid():
             form.save()
             return redirect('dashboard')
 
     context = {
         'form': form,
-        'company': company    }
+        'company': company,
+        'posts': posts,
+        }
     return render(request, './content/staff-company-edit.html', context)
 
 @login_required
@@ -238,3 +243,33 @@ def get_company_posts(request, slug):
         'posts': posts,
     }
     return render(request, './content/staff-company-posts.html', context)
+
+@login_required
+def get_company_post_detail(request, slug, post_id):
+    company = CompanyProfile.objects.get(slug=slug)
+    post = Post.objects.get(slug=slug)
+    context = {
+        'company': company,
+        'post': post,
+    }
+    return render(request, './content/staff-company-post-detail.html', context)
+
+@login_required
+def create_post(request, slug):
+    company = CompanyProfile.objects.get(slug=slug)
+    form = PostCreateForm(instance=company)
+
+    if request.method == 'POST':
+        print(request.POST)
+        form = PostCreateForm(request.POST, request.FILES, instance=company)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+        else:
+            print(form.errors)
+
+    context = {
+        'form': form,
+        'company': company    }
+    return render(request, './content/staff-company-post-create.html', context)
+

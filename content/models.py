@@ -67,8 +67,7 @@ class Staff(User):
     def profile(self):
         return self.staffprofile
     
-    def __str__(self):
-        return self.user.first_name + ' ' + self.user.last_name
+    
 
 
 class StaffProfile(models.Model):
@@ -90,11 +89,13 @@ class StaffProfile(models.Model):
         return self.user.first_name + ' ' + self.user.last_name
 
 class Post(models.Model):
-    STATUS_CHOICES = (
-        ('pending_customer_review', 'Pending Customer Review'),
-        ('pending_customer_revision', 'Pending Customer Revision'),
+    '''('pending customer review', 'Pending Customer Review'),
+        ('pending customer revision', 'Pending Customer Revision'),
         ('published', 'Published'),
-        ('in_design', 'In Design'),
+        ('in design', 'In Design'),'''
+    
+    STATUS_CHOICES = (
+        ('draft', 'Draft'),
         ('approved', 'Approved'),
     )
     POST_TYPE_CHOICES = (
@@ -131,7 +132,7 @@ class Post(models.Model):
     image_9 = models.ImageField(upload_to='post-media/', blank=True)
     image_10 = models.ImageField(upload_to='post-media/', blank=True)
     video_file = models.FileField(upload_to='post-media/', blank=True)
-    #slug = models.SlugField(max_length=200, unique=True, default=uuid.uuid1, null=True)
+    slug = models.SlugField(max_length=200, unique=True, default=uuid.uuid1, null=True)
     
     def __str__(self):
         return self.title

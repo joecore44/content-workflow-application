@@ -14,10 +14,32 @@ class StaffRegisterForm(UserCreationForm):
 class CompanyProfileForm(forms.ModelForm):
     class Meta:
         model = CompanyProfile
-        fields = ['status',
-         'company_name',
+        fields = [
+          'status',
+          'company_name',
           'company_logo',
-           'phone',
-            'admin_email',
-             'website']
-
+          'phone',
+          'admin_email',
+          'website'
+          ]
+        
+class PostCreateForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = [
+          'title',
+          'content',
+          'post_type',
+          'deadline',
+          'status',
+          'image_1',
+          'image_2',
+          'image_3',
+          'image_4',
+          'image_5',
+          'image_6',
+          'image_7',
+          'image_8',
+          'image_9',
+          'image_10',
+          'video_file']
