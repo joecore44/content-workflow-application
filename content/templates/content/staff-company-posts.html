@@ -99,7 +99,7 @@
     
         <!-- Content Column -->
         <div class="col-xl-12 col-lg-12">
-                <a href="/dashboard/detail">
+                <a href="{% url 'post-detail' post.slug %}">
                 <!-- Project Card Example -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
@@ -107,12 +107,12 @@
                             <a href="#" class="btn btn-warning btn-circle btn-sm">
                                 <i class="fas fa-exclamation-triangle"></i>
                             </a>
-                            <a href="/dashboard/detail">{{ post.type }} Post</h6></a>
+                            <a href="{% url 'post-detail' post.slug %}">{{ post.type }} Post</h6></a>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-4 mb-4">
-                                <img src="{{ post.image }}" width="350px" />
+                                <img src="/media/{{ post.image_1 }}" width="175px" class="rounded" />
                             </div>
                             <div class="col-lg-8 mb-4">
                                 <h4 class="small font-weight-bold">{{post.title}}</h4>

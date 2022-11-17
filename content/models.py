@@ -1,35 +1,13 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import User
 import uuid
 
-class User(AbstractUser):
-    class Role(models.TextChoices):
-        CLIENT = "CLIENT", 'Client'
-        STAFF = "STAFF", 'Staff'
-        ADMIN = "ADMIN", 'Admin'
-
-    base_role = Role.ADMIN
-    role = models.CharField(max_length=50, choices=Role.choices, default=base_role)
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.role = self.base_role
-            return super().save(*args, **kwargs)
-
-class ClientManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        results = super().get_queryset(*args, **kwargs)
-        return results.filter(role=User.Role.CLIENT)
-
-class Client(User):
-    base_role = User.Role.CLIENT
-    client = ClientManager()
-    class Meta:
-        proxy = True
-
-
-class ClientProfile(models.Model):
-    user = models.OneToOneField(Client, on_delete=models.CASCADE)
+class Client(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     company = models.OneToOneField('CompanyProfile', on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return self.user.first_name + ' ' + self.company.company_name
 
 class CompanyProfile(models.Model):
     COMPANY_CHOICES = (
@@ -52,25 +30,7 @@ class CompanyProfile(models.Model):
     def __str__(self):
         return self.company_name
 
-class StaffManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        results = super().get_queryset(*args, **kwargs)
-        return results.filter(role=User.Role.STAFF)
-
-class Staff(User):
-    base_role = User.Role.STAFF
-    class Meta:
-        proxy = True
-    staff = StaffManager()
-
-    @property
-    def profile(self):
-        return self.staffprofile
-    
-    
-
-
-class StaffProfile(models.Model):
+class Staff(models.Model):
 
     DEPARTMENT_CHOICES = (
         ('sales', 'Sales'),
@@ -80,13 +40,21 @@ class StaffProfile(models.Model):
         ('management', 'Management'),
     )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_image = models.ImageField(upload_to='staff-media/', blank=True)
+    profile_image = models.ImageField(upload_to='staff-media/', default='staff-media/default.jpg')
     department = models.CharField(max_length=20, choices=DEPARTMENT_CHOICES)
     phone = models.CharField(max_length=12)
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.user.first_name + ' ' + self.user.last_name
+
+class CompanyFollowers(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    company = models.ForeignKey('CompanyProfile', on_delete=models.CASCADE, related_name='followers')
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.first_name + ' following ' + self.company.company_name
 
 class Post(models.Model):
     '''('pending customer review', 'Pending Customer Review'),
@@ -111,7 +79,7 @@ class Post(models.Model):
     )
     client = models.ForeignKey(CompanyProfile, 
     on_delete=models.CASCADE, default='')
-    staff = models.ForeignKey(StaffProfile, 
+    staff = models.ForeignKey(Staff, 
     on_delete=models.CASCADE, null=True, 
     blank=True, default='')
     title = models.CharField(max_length=200)
@@ -119,8 +87,8 @@ class Post(models.Model):
     post_type = models.CharField(max_length=20, choices=POST_TYPE_CHOICES, default='facebook_image')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deadline = models.DateTimeField()
-    status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='draft')
+    deadline = models.DateField()
+    #status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='draft')
     image_1 = models.ImageField(upload_to='post-media/', blank=True)
     image_2 = models.ImageField(upload_to='post-media/', blank=True)
     image_3 = models.ImageField(upload_to='post-media/', blank=True)
@@ -136,3 +104,13 @@ class Post(models.Model):
     
     def __str__(self):
         return self.title
+
+class PostComment(models.Model):
+    staff_comment = models.BooleanField(default=False)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    comment = models.TextField()
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.first_name + ' commenting on ' + self.post.title

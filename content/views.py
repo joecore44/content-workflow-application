@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
 from django.views.generic import ListView, DetailView, CreateView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.http import HttpResponse
-from .models import Staff, Client, Post, CompanyProfile
+from .models import Staff, Client, Post
+from .models import CompanyProfile, CompanyFollowers, PostComment
 from .forms import StaffRegisterForm, CompanyProfileForm
-from .forms import PostCreateForm
+from .forms import PostCreateForm, PostCommentForm
 from django.contrib.auth.decorators import login_required
 
 posts = [
@@ -199,17 +199,18 @@ def staff_home(request):
 def client_post_detail(request):
     context = {
         'posts': posts,
-        'comments': comments
+        'comments': comments,
     }
     return render(request, './content/staff-post-detail-fb-image.html', context)
 
 @login_required
 def company_create(request):
     if request.method == 'POST':
-        form = CompanyProfileForm(request.POST)
+        form = CompanyProfileForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('staff-home')
+            company = form.save()
+            company.save()
+            return redirect('dashboard')
     else:
         form = CompanyProfileForm()
     return render(request, './content/staff-company-create.html', {'form': form})
@@ -219,9 +220,12 @@ def company_update(request, slug):
     company = CompanyProfile.objects.get(slug=slug)
     form = CompanyProfileForm(instance=company)
     posts = Post.objects.filter(client=company).order_by('-deadline')[:3]
+    followers = CompanyFollowers.objects.filter(company=company)
+    is_following = CompanyFollowers.objects.filter(user=request.user, company=company).exists()
+    
 
     if request.method == 'POST':
-        form = CompanyProfileForm(request.POST,  request.FILES, instance=company)
+        form = CompanyProfileForm(request.POST, request.FILES, instance=company)
         print(request.POST)
         if form.is_valid():
             form.save()
@@ -231,45 +235,81 @@ def company_update(request, slug):
         'form': form,
         'company': company,
         'posts': posts,
+        'followers': followers,
+        'is_following': is_following,
         }
     return render(request, './content/staff-company-edit.html', context)
 
 @login_required
+def follow_company(request, slug):
+    company = CompanyProfile.objects.get(slug=slug)
+    if CompanyFollowers.objects.filter(user=request.user, company=company).exists():
+        CompanyFollowers.objects.filter(user=request.user, company=company).delete()
+    else:
+        CompanyFollowers.objects.create(user=request.user, company=company)
+    
+    return redirect('update-company', slug=slug)
+
+@login_required
+def company_delete(request, slug):
+    company = CompanyProfile.objects.get(slug=slug)
+    company.delete()
+    messages.success(request, f'{company} Successfully Deleted!')
+    return redirect('dashboard')
+
+@login_required
 def get_company_posts(request, slug):
     company = CompanyProfile.objects.get(slug=slug)
-    postss = company.post_set.all()
+    company_posts = company.post_set.all()
     context = {
         'company': company,
-        'posts': posts,
+        'posts': company_posts,
     }
     return render(request, './content/staff-company-posts.html', context)
 
 @login_required
-def get_company_post_detail(request, slug, post_id):
-    company = CompanyProfile.objects.get(slug=slug)
+def get_company_post_detail(request, slug):
     post = Post.objects.get(slug=slug)
+    comment_form = PostCommentForm()
+    if request.method == 'POST':
+        comment_form = PostCommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.save()
+    comments = post.postcomment_set.all()
     context = {
-        'company': company,
         'post': post,
+        'comments': comments,
+        'comment_form': comment_form,
     }
     return render(request, './content/staff-company-post-detail.html', context)
 
 @login_required
 def create_post(request, slug):
     company = CompanyProfile.objects.get(slug=slug)
-    form = PostCreateForm(instance=company)
+    posts = Post.objects.filter(client=company).order_by('-deadline')[:3]
+    form = PostCreateForm()
+    staff = Staff.objects.get(user=request.user)
 
     if request.method == 'POST':
-        print(request.POST)
-        form = PostCreateForm(request.POST, request.FILES, instance=company)
+        form = PostCreateForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('dashboard')
+            post = form.save(commit=False)
+            post.client = company
+            post.staff = staff
+            post.save(0)
+            CompanyFollowers.objects.create(user=request.user, company=company)
+            messages.success(request, f'{post.title} Created!')
+            return redirect('company-posts', slug=slug)
         else:
             print(form.errors)
 
     context = {
         'form': form,
-        'company': company    }
+        'company': company,
+        'posts': posts 
+        }
     return render(request, './content/staff-company-post-create.html', context)
 

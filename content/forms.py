@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import CompanyProfile, Staff, Post
+from .models import CompanyProfile, Staff, Post,PostComment
 
 
 class StaffRegisterForm(UserCreationForm):
@@ -31,7 +31,6 @@ class PostCreateForm(forms.ModelForm):
           'content',
           'post_type',
           'deadline',
-          'status',
           'image_1',
           'image_2',
           'image_3',
@@ -43,3 +42,10 @@ class PostCreateForm(forms.ModelForm):
           'image_9',
           'image_10',
           'video_file']
+
+class PostCommentForm(forms.ModelForm):
+    class Meta:
+        model = PostComment
+        fields = [
+          'comment'
+          ]

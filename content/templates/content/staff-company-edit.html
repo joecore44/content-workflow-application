@@ -46,7 +46,7 @@
                                     <tbody>
                                   
                                         {% for post in posts %}
-                                        <tr onclick="window.location='#';" class="client-table">
+                                        <tr onclick="window.location='{% url 'post-detail' post.slug %}';" class="client-table">
                                             <td>{{ post.title }}</td>
                                             <td>{{ post.deadline }}</td>
                                             <td><span class="badge badge-success">{{ post.status }}</span></td>
@@ -60,25 +60,28 @@
                                 <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>                  
-                                            <th>Active Users</th>
+                                            <th>Project Staff</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                   
-                                        
+                                        {% for follower in followers %}
                                         <tr onclick="window.location='#';" class="client-table">
-                                            <td>Joe Shepard</td>
+                                            <td>{{ follower.user.first_name }} {{ follower.user.last_name }}</td>
                                            
                                         </tr>
-                                        <tr onclick="window.location='#';" class="client-table">
-                                            <td>Joe Shepard</td>
-                                           
-                                        </tr>
+                
+                                        {% endfor %}
                                  
                                     </tbody>
                                 </table>
                                 <div>
-                                    <button class="btn btn-outline-primary" type="button"><i class="fas fa-user"></i> User</button>
+                                    <a href="{% url 'delete-company' company.slug %}"><button class="btn btn-outline-danger" type="button"><i class="fas fa-trash"></i></button></a>
+                                    {% if is_following%}
+                                    <a href="{% url 'follow-company' company.slug %}"><button class="btn btn-outline-secondary" type="button"><i class="fas fa-user"></i> Following</button></a>
+                                    {% else %}
+                                    <a href="{% url 'follow-company' company.slug %}"><button class="btn btn-outline-primary" type="button"><i class="fas fa-plus"></i> Follow</button></a>
+                                    {% endif %}
                                     <a href="{% url 'company-posts' company.slug %}"><button class="btn btn-outline-primary" type="button"><i class="fas fa-calendar"></i> Content</button></a>
                                 </div>
                             </div>
