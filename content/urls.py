@@ -12,4 +12,5 @@ urlpatterns = [
     path('company/<str:slug>/posts', views.get_company_posts, name='company-posts'),
     path('company/<str:slug>/posts/new', views.create_post, name='post-create'),
     path('company/post/<str:slug>', views.get_company_post_detail, name='post-detail'),
+    path('company/post/<str:slug>/<int:image>', views.get_company_post_detail, name='post-detail'),
 ]

@@ -265,24 +265,28 @@ def get_company_posts(request, slug):
         'company': company,
         'posts': company_posts,
     }
-    return render(request, './content/staff-company-posts.html', context)
+    return render(request, './content/staff-company-posts2.html', context)
 
 @login_required
-def get_company_post_detail(request, slug):
+def get_company_post_detail(request, slug, image=None):
     post = Post.objects.get(slug=slug)
     comment_form = PostCommentForm()
+    if image == None:
+        image = 1
     if request.method == 'POST':
         comment_form = PostCommentForm(request.POST)
         if comment_form.is_valid():
             comment = comment_form.save(commit=False)
             comment.post = post
             comment.user = request.user
+            comment.image = image
             comment.save()
-    comments = post.postcomment_set.all()
+    comments = post.postcomment_set.filter(image=image)
     context = {
         'post': post,
         'comments': comments,
         'comment_form': comment_form,
+        'img': image,
     }
     return render(request, './content/staff-company-post-detail2.html', context)
 
@@ -311,5 +315,5 @@ def create_post(request, slug):
         'company': company,
         'posts': posts 
         }
-    return render(request, './content/staff-company-post-create.html', context)
+    return render(request, './content/staff-company-post-create2.html', context)
 

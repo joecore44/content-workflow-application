@@ -57,12 +57,10 @@ class CompanyFollowers(models.Model):
         return self.user.first_name + ' following ' + self.company.company_name
 
 class Post(models.Model):
-    '''('pending customer review', 'Pending Customer Review'),
-        ('pending customer revision', 'Pending Customer Revision'),
-        ('published', 'Published'),
-        ('in design', 'In Design'),'''
-    
     STATUS_CHOICES = (
+        ('pending customer approval', 'Pending Customer Approval'),
+        ('published', 'Published'),
+        ('in design', 'In Design'),
         ('draft', 'Draft'),
         ('approved', 'Approved'),
     )
@@ -84,11 +82,11 @@ class Post(models.Model):
     blank=True, default='')
     title = models.CharField(max_length=200)
     content = models.TextField()
+    post_status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='draft')
     post_type = models.CharField(max_length=20, choices=POST_TYPE_CHOICES, default='facebook_image')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deadline = models.DateField()
-    #status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='draft')
     image_1 = models.ImageField(upload_to='post-media/', blank=True)
     image_2 = models.ImageField(upload_to='post-media/', blank=True)
     image_3 = models.ImageField(upload_to='post-media/', blank=True)
@@ -110,6 +108,7 @@ class PostComment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.TextField()
+    image = models.IntegerField(default=1)
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

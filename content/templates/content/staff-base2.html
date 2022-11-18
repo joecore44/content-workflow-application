@@ -341,7 +341,7 @@
                                 <h3>Main</h3>
                             </li>
                             <li class="slide">
-                                <a class="side-menu__item has-link" data-bs-toggle="slide" href="index.html"><i
+                                <a class="side-menu__item has-link" data-bs-toggle="slide" href="/dashboard"><i
                                         class="side-menu__icon fe fe-home"></i><span
                                         class="side-menu__label">Dashboard</span></a>
                             </li>
@@ -2945,6 +2945,11 @@
 
     <!-- Switcher js -->
     <script src="{% static 'assets/switcher/js/switcher.js' %}"></script>
+     <!-- INTERNAL Bootstrap-Datepicker js-->
+     <script src="{% static '/assets/plugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
+     <script src="{% static '/assets/plugins/date-picker/date-picker.js' %}"></script>
+    <script src="{% static '/assets/plugins/date-picker/jquery-ui.js' %}"></script>
+    <script src="{% static '/assets/plugins/input-mask/jquery.maskedinput.js' %}"></script>
     <script>
         const elementsInputs = document.querySelectorAll('input[id^="id_"]');
         elementsInputs.forEach(element => {

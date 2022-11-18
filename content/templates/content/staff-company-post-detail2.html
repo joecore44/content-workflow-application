@@ -17,91 +17,70 @@
 <div class="row justify-content-center">
     <div class="col-xl-8 ">
         <div class="card">
-            <div id="carousel-indicators4" class="carousel slide" data-bs-ride="carousel">
-                <ol class="carousel-indicators carousel-indicators4">
+            {% if img == 1 or img == none %}
+            <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_1}}" data-bs-holder-rendered="true">
+            {% elif img == 2 %}
+            <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_2}}" data-bs-holder-rendered="true">
+            {% elif img == 3 %}
+            <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_3}}" data-bs-holder-rendered="true">
+            {% elif img == 4 %}
+            <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_4}}" data-bs-holder-rendered="true">
+            {% elif img == 5 %}
+            <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_5}}" data-bs-holder-rendered="true">
+            {% elif img == 6 %}
+            <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_6}}" data-bs-holder-rendered="true">
+            {% elif img == 7 %}
+            <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_7}}" data-bs-holder-rendered="true">
+            {% elif img == 8 %}
+            <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_8}}" data-bs-holder-rendered="true">
+            {% elif img == 9 %}
+            <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_9}}" data-bs-holder-rendered="true">
+            {% elif img == 10 %}
+            <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_10}}" data-bs-holder-rendered="true">
+            
+            {% endif %}
+            
+
+
+            <div class="card-body mx-auto">
+              
+                <ul class="pagination">
                     {% if post.image_1 %}
-                    <li data-bs-target="#carousel-indicators4" data-bs-slide-to="0" class="active"></li>
+                    <li class="page-item {% if img == 1 %}active{% endif %}"><a class="page-link" href="{% url 'post-detail' post.slug 1 %}">1</a></li>
                     {% endif %}
-                    {% if post.image_2 %}
-                    <li data-bs-target="#carousel-indicators4" data-bs-slide-to="1"></li>
+                    {% if post.image_2%}
+                    <li class="page-item {% if img == 2 %}active{% endif %}"><a class="page-link" href="{% url 'post-detail' post.slug 2 %}">2</a></li>
                     {% endif %}
                     {% if post.image_3 %}
-                    <li data-bs-target="#carousel-indicators4" data-bs-slide-to="2"></li>
+                    <li class="page-item {% if img == 3 %}active{% endif %}"><a class="page-link" href="{% url 'post-detail' post.slug 1 %}">3</a></li>
                     {% endif %}
                     {% if post.image_4 %}
-                    <li data-bs-target="#carousel-indicators4" data-bs-slide-to="3"></li>
+                    <li class="page-item {% if img == 4 %}active{% endif %}"><a class="page-link" href="{% url 'post-detail' post.slug 1 %}">4</a></li>
                     {% endif %}
                     {% if post.image_5 %}
-                    <li data-bs-target="#carousel-indicators4" data-bs-slide-to="4"></li>
+                    <li class="page-item {% if img == 5 %}active{% endif %}"><a class="page-link" href="{% url 'post-detail' post.slug 1 %}">5</a></li>
                     {% endif %}
                     {% if post.image_6 %}
-                    <li data-bs-target="#carousel-indicators4" data-bs-slide-to="5"></li>
+                    <li class="page-item {% if img == 6 %}active{% endif %}"><a class="page-link" href="{% url 'post-detail' post.slug 1 %}">6</a></li>
                     {% endif %}
                     {% if post.image_7 %}
-                    <li data-bs-target="#carousel-indicators4" data-bs-slide-to="6"></li>
+                    <li class="page-item {% if img == 7 %}active{% endif %}"><a class="page-link" href="{% url 'post-detail' post.slug 1 %}">7</a></li>
                     {% endif %}
                     {% if post.image_8 %}
-                    <li data-bs-target="#carousel-indicators4" data-bs-slide-to="7"></li>
+                    <li class="page-item {% if img == 8 %}active{% endif %}"><a class="page-link" href="{% url 'post-detail' post.slug 1 %}">8</a></li>
                     {% endif %}
                     {% if post.image_9 %}
-                    <li data-bs-target="#carousel-indicators4" data-bs-slide-to="8"></li>
+                    <li class="page-item {% if img == 9 %}active{% endif %}"><a class="page-link" href="{% url 'post-detail' post.slug 1 %}">9</a></li>
                     {% endif %}
                     {% if post.image_10 %}
-                    <li data-bs-target="#carousel-indicators4" data-bs-slide-to="9"></li>
+                    <li class="page-item {% if img == 10 %}active{% endif %}"><a class="page-link" href="{% url 'post-detail' post.slug 1 %}">10</a></li>
                     {% endif %}
-                </ol>
-                <div class="carousel-inner">
-                    {% if post.image_1 %}
-                    <div class="carousel-item active">
-                        <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_1}}" data-bs-holder-rendered="true">
-                    </div>
-                    {% endif %}
-                    {% if post.image_2 %}
-                    <div class="carousel-item">
-                        <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_2}}" data-bs-holder-rendered="true">
-                    </div>
-                    {% endif %}
-                    {% if post.image_3 %}
-                    <div class="carousel-item">
-                        <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_3}}" data-bs-holder-rendered="true">
-                    </div>
-                    {% endif %}
-                    {% if post.image_4 %}
-                    <div class="carousel-item">
-                        <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_4}}" data-bs-holder-rendered="true">
-                    </div>
-                    {% endif %}
-                    {% if post.image_5 %}
-                    <div class="carousel-item">
-                        <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_5}}" data-bs-holder-rendered="true">
-                    </div>
-                    {% endif %}
-                    {% if post.image_6 %}
-                    <div class="carousel-item">
-                        <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_6}}" data-bs-holder-rendered="true">
-                    </div>
-                    {% endif %}
-                    {% if post.image_7 %}
-                    <div class="carousel-item">
-                        <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_7}}" data-bs-holder-rendered="true">
-                    </div>
-                    {% endif %}
-                    {% if post.image_8 %}
-                    <div class="carousel-item">
-                        <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_8}}" data-bs-holder-rendered="true">
-                    </div>
-                    {% endif %}
-                    {% if post.image_9 %}
-                    <div class="carousel-item">
-                        <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_9}}" data-bs-holder-rendered="true">
-                    </div>
-                    {% endif %}
-                    {% if post.image_10 %}
-                    <div class="carousel-item">
-                        <img class="d-block w-100 br-5" alt="" src="/media/{{ post.image_10}}" data-bs-holder-rendered="true">
-                    </div>
-                    {% endif %}
-                </div>
+                </ul>
+           
+            </div>
+            <div class="card-body">
+                <h3><a href="javascript:void(0)"> {{ post.title }}</a></h3>
+                <p class="card-text">{{ post.content }}</p>
             </div>
             <div class="card-body">
                 <div class="d-md-flex">
@@ -118,15 +97,13 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body">
-                <h3><a href="javascript:void(0)"> {{ post.title }}</a></h3>
-                <p class="card-text">{{ post.content }}</p>
-            </div>
         </div>
         <div class="card">
+            {% if comments %}
             <div class="card-header">
-                <div class="card-title">Comments</div>
+                <div class="card-title">Feedback</div>
             </div>
+            {% endif %}
             <div class="card-body pb-0">
                 {% for comment in comments %}
                 {% if comment.staff_comment == False %}

@@ -43,7 +43,7 @@
                                         <a href="{% url 'follow-company' company.slug %}"><button class="btn btn-primary mt-1 mb-1"> <i class="fa fa-rss"></i> <span>Follow</span></button></a>
 
                                         {% endif %}
-                                        <button class="btn btn-secondary mt-1 mb-1"> <i class="fa fa-envelope"></i> <span>Message</span></button>
+                                        <a href="{% url 'company-posts' company.slug%}"><button class="btn btn-secondary mt-1 mb-1"> <i class="fa fa-calendar"></i> <span>Posts</span></button>
                                     </div>
                                 </div>
                             </div>
@@ -239,7 +239,7 @@
                                         <span class=""><i class="fe fe-more-vertical"></i></span>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-end">
-                                        <a class="dropdown-item" href="javascript:void(0)">Edit Post</a>
+                                        <a class="dropdown-item" href="{% url 'post-detail' post.slug %}">Edit Post</a>
                                         <a class="dropdown-item" href="javascript:void(0)">Delete Post</a>
                                         <a class="dropdown-item" href="javascript:void(0)">Personal Settings</a>
                                     </div>

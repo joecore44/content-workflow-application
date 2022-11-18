@@ -30,6 +30,7 @@ class PostCreateForm(forms.ModelForm):
           'title',
           'content',
           'post_type',
+          'post_status',
           'deadline',
           'image_1',
           'image_2',
