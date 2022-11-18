@@ -192,7 +192,7 @@ def staff_home(request):
     context = {
         'clients': clients,
     }
-    return render(request, './content/staff-index.html', context)
+    return render(request, './content/staff-index2.html', context)
 
         
 @login_required
@@ -238,7 +238,7 @@ def company_update(request, slug):
         'followers': followers,
         'is_following': is_following,
         }
-    return render(request, './content/staff-company-edit.html', context)
+    return render(request, './content/staff-company-edit2.html', context)
 
 @login_required
 def follow_company(request, slug):
@@ -284,7 +284,7 @@ def get_company_post_detail(request, slug):
         'comments': comments,
         'comment_form': comment_form,
     }
-    return render(request, './content/staff-company-post-detail.html', context)
+    return render(request, './content/staff-company-post-detail2.html', context)
 
 @login_required
 def create_post(request, slug):
