@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import CompanyProfile, Staff, Post,PostComment
+from .models import CompanyProfile, Staff
+from .models import Post, PostComment, PostRevision
 
 
 class StaffRegisterForm(UserCreationForm):
@@ -49,4 +50,11 @@ class PostCommentForm(forms.ModelForm):
         model = PostComment
         fields = [
           'comment'
+          ]
+
+class PostRevisionForm(forms.ModelForm):
+    class Meta:
+        model = PostRevision
+        fields = [
+          'revision'
           ]

@@ -113,3 +113,13 @@ class PostComment(models.Model):
 
     def __str__(self):
         return self.user.first_name + ' commenting on ' + self.post.title
+
+class PostRevision(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    revision = models.TextField(null=False, verbose_name='Revision Notes')
+    image = models.IntegerField(default=1)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.staff.user.first_name + ' | ' + self.revision
